@@ -5,7 +5,7 @@ jQuery(function ($) {
 
 		config: {
 			object: $('#jack'),
-			movementThreshold: 50
+			movementThreshold: 20
 		},
 
 		init: function() {
@@ -31,17 +31,23 @@ jQuery(function ($) {
 		},
 
 		moveUp: function() {
-			var currentPosition = this.config.object.offset(),
+			debugger;
+			var jack = this.config.object;
+			var currentPosition = jack.offset(),
 				top = parseInt(currentPosition.top - this.config.movementThreshold),
 				newPosition = top - this.config.movementThreshold; 
-			this.config.object.css({top: ''+newPosition+'px'});
+
+			jack.css({top: newPosition});
 		},
 
 		moveDown: function() {
-			var currentPosition = this.config.object.offset(),
+			debugger;
+			var jack = this.config.object;
+			var currentPosition = jack.offset(),
 				top = parseInt(currentPosition.top + this.config.movementThreshold),
 				newPosition = top + this.config.movementThreshold; 
-			this.config.object.css({top: ''+newPosition+'px'});
+
+			jack.css({top: newPosition});
 		},
 
 		reset: function() {
