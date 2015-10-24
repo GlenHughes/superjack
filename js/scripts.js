@@ -31,23 +31,17 @@ jQuery(function ($) {
 		},
 
 		moveUp: function() {
-			debugger;
-			var jack = this.config.object;
-			var currentPosition = jack.offset(),
-				top = parseInt(currentPosition.top - this.config.movementThreshold),
-				newPosition = top - this.config.movementThreshold; 
+			var jack = this.config.object,
+				newTop = parseInt(jack.offset().top - (this.config.movementThreshold * 2));
 
-			jack.css({top: newPosition});
+			jack.css({top: newTop});
 		},
 
 		moveDown: function() {
-			debugger;
-			var jack = this.config.object;
-			var currentPosition = jack.offset(),
-				top = parseInt(currentPosition.top + this.config.movementThreshold),
-				newPosition = top + this.config.movementThreshold; 
+			var jack = this.config.object,
+				newTop = parseInt(jack.offset().top + this.config.movementThreshold);
 
-			jack.css({top: newPosition});
+			jack.css({top: newTop});
 		},
 
 		reset: function() {
