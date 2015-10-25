@@ -5,7 +5,25 @@ jQuery(function ($) {
 
 		config: {
 			object: $('#jack'),
-			movementThreshold: 20
+			loadingArea: $('#loadingArea'),
+			loadObjectDelay: 500,
+			movementThreshold: 20,
+			badGuys: {
+				nappy: {
+					'name': 'nappy',
+					'image': 'img/nappy.png'
+				}
+			},
+			goodGuys: {
+				milkBottle: {
+					'name': 'milkBottle',
+					'image': 'img/bottle.png'
+				},
+				mummy: {
+					'name': 'mummy',
+					'image': 'img/mummy.png'
+				}
+			}
 		},
 
 		init: function() {
@@ -28,6 +46,37 @@ jQuery(function ($) {
 				}
 			});
 
+			// insert new object 
+			setInterval(
+				function () {
+					_this.runObjects();
+				},
+				_this.config.loadObjectDelay
+			);
+			
+
+		},
+
+		goodOrBad: function () {
+			return Math.random() < 0.5 ? 0 : 1;
+		},
+
+		runObjects: function () {
+			var items = (this.goodOrBad()) ? this.config.badGuys : this.config.goodGuys;
+			for (item in items) {
+				this.insertObject(items[item]);
+				console.log(item);
+			}
+		},
+
+		insertObject: function (item) {
+			var template = '<div data-item-name="'+item.name+'"><img src="'+item.image+'"></div>';
+			debugger;
+			this.config.loadingArea.append(template);
+		},
+
+		removeObject: function (item) {
+			$('[data-item-name="'+item.name+'"]').remove();
 		},
 
 		moveUp: function() {
@@ -42,6 +91,20 @@ jQuery(function ($) {
 				newTop = parseInt(jack.offset().top + this.config.movementThreshold);
 
 			jack.css({top: newTop});
+		},
+
+		randomNumber: function (max, min) {
+			return Math.random() * (max - min) + min;
+		},
+
+		startPosition: function (position) {
+			return this.randomNumber(position.bottom, 0);
+		},
+
+		moveRight: function(element) {
+			var object = $(element),
+				startPosition = this.startPosition(object.element),
+				newPosition = this.randomNumber(window.height(), 0);
 		},
 
 		reset: function() {

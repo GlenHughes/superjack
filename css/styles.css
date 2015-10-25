@@ -98,3 +98,14 @@ html {
 	height: 231px;
 	background: url('../img/jack.png');
 }
+
+.item{
+	position: absolute;
+	right: -9999px;
+}
+	.item.baby-bottle{
+		right: -100px;
+		width: 446px;
+		height: 181px;
+		background: url('../img/baby-bottle.png') no-repeat;
+	}
