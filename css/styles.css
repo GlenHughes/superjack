@@ -101,11 +101,45 @@ html {
 
 .item{
 	position: absolute;
-	right: -9999px;
+	right: 0;
+}
+#loadingArea .item{
+
 }
 	.item.baby-bottle{
-		right: -100px;
+		right: 0;
 		width: 446px;
 		height: 181px;
 		background: url('../img/baby-bottle.png') no-repeat;
+		
 	}
+
+	.slideRight{
+		-webkit-animation: slideright 5s;
+		-moz-animation: slideright 5s;
+		animation: slideright 5s;
+	}
+
+	@-webkit-keyframes slideright {
+		from {
+			right: 0;
+		}
+		to {
+			right: 100%;
+		}
+	}
+
+	@-moz-keyframes slideright {
+		from {
+			right: 0;
+		}
+		to {
+			right: 100%;
+		}
+	}
+
+#loadingArea{
+	position: absolute;
+	right: 0;
+	width: 100%;
+}
