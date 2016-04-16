@@ -8,7 +8,7 @@ jQuery(function ($) {
 			loadingArea: $('#loadingArea'),
 			loadObjectDelay: 3000,
 			movementThreshold: 20,
-			itemExpiry: 30 * 1000, // 30 seconds
+			itemExpiry: 4 * 1000, // 30 seconds
 			checkForExpired: 1000, // every second
 			distanceTolerance: 10, // px
 			badGuys: {
@@ -78,7 +78,7 @@ jQuery(function ($) {
 
 		log: {
 			config: {
-				logsEnabled: true
+				logsEnabled: false
 			},
 			create: function (log) {
 				if (this.config.logsEnabled) {
@@ -99,7 +99,7 @@ jQuery(function ($) {
 		},
 
 		randomTopPosition: function () {
-			var windowHeight = window.height;
+			var windowHeight = $(window).height();
 			return this.randomNumber(0, windowHeight);
 		},
 
