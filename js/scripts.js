@@ -10,7 +10,7 @@ jQuery(function ($) {
 			movementThreshold: 20,
 			itemExpiry: 4 * 1000, // 30 seconds
 			checkForExpired: 1000, // every second
-			distanceTolerance: 10, // px
+			distanceTolerance: 25, // px
 			badGuys: {
 				nappy: {
 					'name': 'nappy',
@@ -26,15 +26,54 @@ jQuery(function ($) {
 		},
 
 		properties: {
-			loadedItems: []
+			loadedItems: [],
+			gameIsRunning: false
+		},
+
+		music: {
+			player: null,
+			gameOver: $('#gameOverMusic')[0],
+			intro: $('#introMusic')[0],
+			autoPlay: false,
+			playing: false,
+			init: function () {
+				if (this.autoPlay) {
+					this.play('intro');
+				}
+			},
+			isPlaying: function (music) {
+				console.log(music);
+			},
+			play: function (music) {
+				if (!this.playing) {
+					this.player = this[music];
+					this.player.play();
+				}
+			},
+			pause: function () {
+				this.player.pause();
+				this.playing = false;
+			},
+			reset: function () {
+				this.player.currentTime = 0;
+			}
 		},
 
 		init: function() {
+			this.music.init();
 			this.registerEvents();
 		},
 
 		registerEvents: function() {
 			var _this = this;
+
+			// play button
+			$('[data-play]').on('click', function () {
+				$(this).parents('div.blackBackground').addClass('hidden');
+				_this.properties.gameIsRunning = true;
+			});
+
+			// controls
 			$(document).on('keyup', function (event) {
 				var keyCode = event.keyCode;
 
@@ -78,7 +117,7 @@ jQuery(function ($) {
 
 		log: {
 			config: {
-				logsEnabled: false
+				logsEnabled: true
 			},
 			create: function (log) {
 				if (this.config.logsEnabled) {
@@ -87,15 +126,18 @@ jQuery(function ($) {
 			}
 		},
 
-		goodOrBad: function () {
-			return Math.random() < 0.5 ? 0 : 1;
+		runObjects: function () {
+			// only run if game isnt over
+			if (this.properties.gameIsRunning) {
+				var items = (this.goodOrBad()) ? this.config.badGuys : this.config.goodGuys;
+				for (item in items) {
+					this.insertObject(items[item]);
+				}
+			}
 		},
 
-		runObjects: function () {
-			var items = (this.goodOrBad()) ? this.config.badGuys : this.config.goodGuys;
-			for (item in items) {
-				this.insertObject(items[item]);
-			}
+		goodOrBad: function () {
+			return Math.random() < 0.5 ? 0 : 1;
 		},
 
 		randomTopPosition: function () {
@@ -142,6 +184,10 @@ jQuery(function ($) {
 			}
 		},
 
+		resetObjects: function () {
+			this.properties.loadedItems = [];
+		},
+
 		moveUp: function() {
 			var jack = this.config.object,
 				newTop = parseInt(jack.offset().top - (this.config.movementThreshold * 2));
@@ -184,22 +230,33 @@ jQuery(function ($) {
 		hasCollided: function (guid) {
 			var item = $('[data-item-id="'+guid+'"]'),
 				itemPosition = item.offset(),
+				itemTop = itemPosition.top,
+				itemLeft = itemPosition.left,
+
+				jack = this.config.object,
+				jackWidth = jack.width() / 2,
+				jackHeight = jack.height() / 2,
 				jackPosition = this.config.object.offset(),
-				jackPositionLeft = Math.round(parseInt(jackPosition.left)),
+				jackPositionTop = jackPosition.top + jackHeight,
+				jackPositionLeft = jackPosition.left + jackWidth,
 				tolerance = this.config.distanceTolerance;
 
-				//this.log.create(item, itemPosition, jackPosition);
-
-				//this.log.create((jackPosition.left - this.config.distanceTolerance));
-			this.log.create(jackPositionLeft, itemPosition, tolerance);
-			if (jackPositionLeft >= itemPosition + tolerance || jackPositionLeft <= itemPosition - tolerance) {
-				this.log.create('Item collision' + item);
-				this.showCollision();
+			//this.log.create('hasCollided: ' + jackPositionLeft, itemPosition, tolerance);
+			// top conflict
+			if (this.isBetween(jackPositionTop, itemPosition.top - tolerance, itemPosition.top + tolerance)) {
+				this.log.create('Item top collision' + item);
+				return this.gameOver();
 			}
+
+			// left conflict
+			if (this.isBetween(jackPositionLeft, itemPosition.left + tolerance, itemPosition.left - tolerance)) {
+				this.log.create('Item left collision' + item);
+				return this.gameOver();
+			}
+
 		},
 
 		checkColisions: function() {
-			
 			var loadedItems = this.properties.loadedItems;
 			for (var i = 0; i < loadedItems.length; i++) {
 
@@ -208,13 +265,37 @@ jQuery(function ($) {
 			}
 		},		
 
+		// will show animated image etc
 		showCollision: function () {
 			this.log.create('Collision shown');
 			//alert('Collision');
 		},
 
-		reset: function() {
+		isBetween: function (number, min, max) {
+			number 	= parseInt(number);
+			min 	= parseInt(min);
+			max 	= parseInt(max);
 
+			if (number >= min && number <= max) {
+				this.log.create('Numnber is between: number: ' + number + ' min: ' + min + ' max: ' + max);
+				return true;
+			}
+			//this.log.create('Numnber is not between: number: ' + number + ' min: ' + min + ' max: ' + max);
+			return false;
+		},
+
+		gameOver: function () {
+			this.log.create('Game over');
+			this.properties.gameIsRunning = false;
+			this.resetObjects();
+
+			$('#gameOver').removeClass('hidden');
+			this.music.reset();
+			this.music.play();
+		},
+
+		reset: function() {
+			this.log.create('Reset');
 		}
 
 	}
