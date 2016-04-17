@@ -9,9 +9,10 @@ jQuery(function ($) {
 			loadingArea: $('#loadingArea'),
 			loadObjectDelay: 3000,
 			movementThreshold: 20,
-			itemExpiry: 4 * 1000, // 30 seconds
-			checkForExpired: 1000, // every second
-			distanceTolerance: 25, // px
+			itemExpiry: 4 * 1000, // 4 seconds
+			checkForExpired: 200, // every second
+			topDistanceTolerance: 40,
+		 	sideDistanceTolerance: 25, // px
 			badGuys: {
 				nappy: {
 					'name': 'nappy',
@@ -251,13 +252,14 @@ jQuery(function ($) {
 				jackPosition = this.config.object.offset(),
 				jackPositionTop = jackPosition.top + jackHeight,
 				jackPositionLeft = jackPosition.left + jackWidth,
-				tolerance = this.config.distanceTolerance,
+				topTolerance = this.config.topDistanceTolerance,
+				sideTolerance = this.config.sideDistanceTolerance,
 				
 				horizontalConflict = false,
 				verticalConflict = false;
 
-			verticalConflict =  (this.isBetween(jackPositionTop, itemPosition.top - tolerance, itemPosition.top + tolerance));
-			horizontalConflict = (this.isBetween(jackPositionLeft, itemPosition.left - tolerance, itemPosition.left + tolerance));
+			verticalConflict =  (this.isBetween(jackPositionTop, itemTop - topTolerance, itemTop + topTolerance, 'top'));
+			horizontalConflict = (this.isBetween(jackPositionLeft, itemLeft - sideTolerance, itemLeft + sideTolerance, 'side'));
 
 			if (verticalConflict && horizontalConflict) {
 				this.gameOver();
@@ -295,13 +297,13 @@ jQuery(function ($) {
 			//alert('Collision');
 		},
 
-		isBetween: function (number, min, max) {
+		isBetween: function (number, min, max, axis) {
 			number 	= parseInt(number);
 			min 	= parseInt(min);
 			max 	= parseInt(max);
 
 			if (number >= min && number <= max) {
-				this.log.create('Numnber is between: number: ' + number + ' min: ' + min + ' max: ' + max);
+				this.log.create('isBetween: asix: ' + axis + ' number: ' + number + ' min: ' + min + ' max: ' + max);
 				return true;
 			}
 			//this.log.create('Numnber is not between: number: ' + number + ' min: ' + min + ' max: ' + max);
