@@ -205,3 +205,26 @@ a.play:active{
   padding-left: 20px;
   padding-right: 20px;
 }
+
+#score{
+  position: absolute;
+  min-width: 90px;
+  height: 110px;
+  background: #ffffff;
+  right: 0;
+  top: 0;
+  text-align: center;
+}
+#score .score{
+  font-size: 80px;
+  font-family: Arial;
+  color: #000000;
+}
+
+#score h3{
+  margin: 0;
+  background-color: #C8191D;
+  color: #fff;
+  font-family: arial;
+  padding: 4px;
+}

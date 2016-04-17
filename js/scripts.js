@@ -4,9 +4,9 @@ jQuery(function ($) {
 	var Jack =  {
 
 		config: {
-			wrapper: $('.container'),
+			wrapper: $('#wrapper'),
 			object: $('#jack'),
-			loadingArea: $('#loadingArea'),
+			loadingArea: $('#loadingArea', this.wrapper),
 			loadObjectDelay: 3000,
 			movementThreshold: 20,
 			itemExpiry: 4 * 1000, // 4 seconds
@@ -33,10 +33,11 @@ jQuery(function ($) {
 		},
 
 		music: {
+			wrapper: $('#music'),
 			player: null,
-			gameOver: $('#gameOverMusic')[0],
-			intro: $('#introMusic')[0],
-			playingMusic: $('#gamePlay')[0],
+			gameOver: $('#gameOverMusic', this.wrapper)[0],
+			intro: $('#introMusic', this.wrapper)[0],
+			playingMusic: $('#gamePlay', this.wrapper)[0],
 			autoPlay: false,
 			playing: false,
 			init: function () {
@@ -162,7 +163,6 @@ jQuery(function ($) {
 				created = new Date().getTime();
 
 			var template = '<div class="slideRight item" data-item-name="'+name+'" data-item-id="'+guid+'" style="top: '+top+'px;"><img src="'+image+'"></div>';
-			// debugger;
 			// load the item into the dom
 			this.config.loadingArea.append(template);
 			// update loaded items property
@@ -172,23 +172,30 @@ jQuery(function ($) {
 		},
 
 		removeObject: function (guid, index) {
+			// remove the item from the page
 			$('[data-item-id="'+guid+'"]').remove();
+			// remove from items array
 			this.properties.loadedItems.splice(index, 1);
 
+			// score the user for one item clearing
+			this.score.increaseScore(1);
 		},
 
 		clearOldObjects: function () {
 			var loadedItems = this.properties.loadedItems,
 				totalItems = loadedItems.length || 0;
 
-			for(var i =0; i < loadedItems.length; i++) {
-				var created = loadedItems[i].created,
-					now = new Date().getTime();
+			for(var i =0; i < totalItems; i++) {
+				var item = loadedItems[i] || null;
 
-				if ( (created + this.config.itemExpiry) < now) {
-					var guid = loadedItems[i].guid;
-					//this.log.create('Removed item: ' + guid);
-					this.removeObject(guid, i);
+				if (item) {
+					var	created = item.created || 0,
+						now = new Date().getTime();
+
+					if ( (created + this.config.itemExpiry) < now) {
+						//this.log.create('Removed item: ' + guid);
+						this.removeObject(item.guid, i);
+					}
 				}
 			}
 		},
@@ -264,21 +271,6 @@ jQuery(function ($) {
 			if (verticalConflict && horizontalConflict) {
 				this.gameOver();
 			}
-			
-
-
-			// //this.log.create('hasCollided: ' + jackPositionLeft, itemPosition, tolerance);
-			// // top conflict
-			// if (this.isBetween(jackPositionTop, itemPosition.top - tolerance, itemPosition.top + tolerance)) {
-			// 	this.log.create('Item top collision' + item);
-			// 	return this.gameOver();
-			// }
-
-			// // left conflict
-			// if (this.isBetween(jackPositionLeft, itemPosition.left + tolerance, itemPosition.left - tolerance)) {
-			// 	this.log.create('Item left collision' + item);
-			// 	return this.gameOver();
-			// }
 
 		},
 
@@ -311,21 +303,36 @@ jQuery(function ($) {
 		},
 
 		score: {
+			wrapper: $('#score'),
+			scorePlaceholder: $('.score', this.wrapper),
 			totalScore: 0,
-			update: function () {
-
+			renderScore: function () {
+				this.scorePlaceholder.animateNumber({number: this.totalScore});
+				//this.scorePlaceholder.text(this.totalScore);
 			},
-
-			setScore: function () {
-
+			increaseScore: function (scoreIncrease) {
+				this.totalScore = this.totalScore + scoreIncrease;
+				this.renderScore();
+			},
+			resetScore: function () {
+				this.totalScore = 0;
+				this.renderScore();
 			}
 		},
 
 		gameOver: function () {
 			this.log.create('Game over');
+
+			// halt game
 			this.properties.gameIsRunning = false;
+
+			// clear objects
 			this.resetObjects();
 
+			// reset the score
+			this.score.resetScore();
+
+			// show game over UI
 			$('#gameOver').removeClass('hidden');
 			this.music.play('gameOver');
 			this.music.player.play();
@@ -339,5 +346,4 @@ jQuery(function ($) {
 
 	Jack.init();
 
-	
-})
+});
