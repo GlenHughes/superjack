@@ -4,6 +4,7 @@ jQuery(function ($) {
 	var Jack =  {
 
 		config: {
+			wrapper: $('.container'),
 			object: $('#jack'),
 			loadingArea: $('#loadingArea'),
 			loadObjectDelay: 3000,
@@ -34,6 +35,7 @@ jQuery(function ($) {
 			player: null,
 			gameOver: $('#gameOverMusic')[0],
 			intro: $('#introMusic')[0],
+			playingMusic: $('#gamePlay')[0],
 			autoPlay: false,
 			playing: false,
 			init: function () {
@@ -41,26 +43,30 @@ jQuery(function ($) {
 					this.play('intro');
 				}
 			},
-			isPlaying: function (music) {
-				console.log(music);
-			},
 			play: function (music) {
-				if (!this.playing) {
-					this.player = this[music];
-					this.player.play();
-				}
+				this.reset();
+				this.player = this[music];
+				this.playing = true;
+				this.player.play();
+			
 			},
 			pause: function () {
-				this.player.pause();
-				this.playing = false;
+				if (this.player) {
+					this.player.pause();
+					this.playing = false;
+				}
 			},
 			reset: function () {
-				this.player.currentTime = 0;
+				this.pause();
+				this['gameOver'].currentTime = 0;
+				this['intro'].currentTime = 0;
+				this['playingMusic'].currentTime = 0;
 			}
 		},
 
 		init: function() {
 			this.music.init();
+			this.music.play('intro');
 			this.registerEvents();
 		},
 
@@ -69,8 +75,10 @@ jQuery(function ($) {
 
 			// play button
 			$('[data-play]').on('click', function () {
+				_this.resetObjects();
 				$(this).parents('div.blackBackground').addClass('hidden');
 				_this.properties.gameIsRunning = true;
+				_this.music.play('playingMusic');
 			});
 
 			// controls
@@ -185,6 +193,10 @@ jQuery(function ($) {
 		},
 
 		resetObjects: function () {
+			$('.item', this.wrapper).slideUp(function () {
+				$(this).remove();
+			});
+			// clear old items from memory
 			this.properties.loadedItems = [];
 		},
 
@@ -239,20 +251,32 @@ jQuery(function ($) {
 				jackPosition = this.config.object.offset(),
 				jackPositionTop = jackPosition.top + jackHeight,
 				jackPositionLeft = jackPosition.left + jackWidth,
-				tolerance = this.config.distanceTolerance;
+				tolerance = this.config.distanceTolerance,
+				
+				horizontalConflict = false,
+				verticalConflict = false;
 
-			//this.log.create('hasCollided: ' + jackPositionLeft, itemPosition, tolerance);
-			// top conflict
-			if (this.isBetween(jackPositionTop, itemPosition.top - tolerance, itemPosition.top + tolerance)) {
-				this.log.create('Item top collision' + item);
-				return this.gameOver();
-			}
+			verticalConflict =  (this.isBetween(jackPositionTop, itemPosition.top - tolerance, itemPosition.top + tolerance));
+			horizontalConflict = (this.isBetween(jackPositionLeft, itemPosition.left - tolerance, itemPosition.left + tolerance));
 
-			// left conflict
-			if (this.isBetween(jackPositionLeft, itemPosition.left + tolerance, itemPosition.left - tolerance)) {
-				this.log.create('Item left collision' + item);
-				return this.gameOver();
+			if (verticalConflict && horizontalConflict) {
+				this.gameOver();
 			}
+			
+
+
+			// //this.log.create('hasCollided: ' + jackPositionLeft, itemPosition, tolerance);
+			// // top conflict
+			// if (this.isBetween(jackPositionTop, itemPosition.top - tolerance, itemPosition.top + tolerance)) {
+			// 	this.log.create('Item top collision' + item);
+			// 	return this.gameOver();
+			// }
+
+			// // left conflict
+			// if (this.isBetween(jackPositionLeft, itemPosition.left + tolerance, itemPosition.left - tolerance)) {
+			// 	this.log.create('Item left collision' + item);
+			// 	return this.gameOver();
+			// }
 
 		},
 
@@ -284,14 +308,25 @@ jQuery(function ($) {
 			return false;
 		},
 
+		score: {
+			totalScore: 0,
+			update: function () {
+
+			},
+
+			setScore: function () {
+
+			}
+		},
+
 		gameOver: function () {
 			this.log.create('Game over');
 			this.properties.gameIsRunning = false;
 			this.resetObjects();
 
 			$('#gameOver').removeClass('hidden');
-			this.music.reset();
-			this.music.play();
+			this.music.play('gameOver');
+			this.music.player.play();
 		},
 
 		reset: function() {
