@@ -109,3 +109,12 @@ html {
 		height: 181px;
 		background: url('../img/baby-bottle.png') no-repeat;
 	}
+
+#loadingArea{
+  position: absolute;
+  right: 0;
+}
+
+  #loadingArea .object{
+
+  }

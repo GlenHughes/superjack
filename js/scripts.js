@@ -6,7 +6,7 @@ jQuery(function ($) {
 		config: {
 			object: $('#jack'),
 			loadingArea: $('#loadingArea'),
-			loadObjectDelay: 500,
+			loadObjectDelay: 5000,
 			movementThreshold: 20,
 			badGuys: {
 				nappy: {
@@ -69,14 +69,45 @@ jQuery(function ($) {
 			}
 		},
 
+		generateId: function () {
+			var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
+
+		    if (!length) {
+		        length = Math.floor(Math.random() * chars.length);
+		    }
+
+		    var str = '';
+		    for (var i = 0; i < length; i++) {
+		        str += chars[Math.floor(Math.random() * chars.length)];
+		    }
+		    return str;
+		},
+
 		insertObject: function (item) {
-			var template = '<div data-item-name="'+item.name+'"><img src="'+item.image+'"></div>';
-			debugger;
+			var uniqueId = this.generateId(),
+				itemName = item.name,
+				template = '<div data-item-name="'+itemName+'" data-item-id="'+uniqueId+'" class="object"><img src="'+item.image+'"></div>';
 			this.config.loadingArea.append(template);
+			this.animateObject($('[data-item-id="'+uniqueId+'"]'));
 		},
 
 		removeObject: function (item) {
 			$('[data-item-name="'+item.name+'"]').remove();
+		},
+
+		animateObject: function (item) {
+			debugger;
+			var currentPosition = item.offset(),
+				left = currentPosition.left,
+				_this = this,
+				i = 0;
+
+			while (i < left) {
+				var newLeft = left + _this.config.movementThreshold;
+				item.css({left: newLeft});
+				i++;
+			}
+
 		},
 
 		moveUp: function() {
