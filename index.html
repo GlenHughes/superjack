@@ -16,6 +16,7 @@
 </head>
 
 <body>
+<<<<<<< HEAD
 <div id='stars'></div>
 <div id='stars2'></div>
 <div id='stars3'></div>
@@ -32,5 +33,54 @@
   <embed src="music/superman.mp3" autostart="false" loop="true" controller="false">
   </object> -->
   	<script src="js/scripts.js"></script>
+=======
+
+<div id="wrapper">
+
+  <div id="music">
+    <audio src="music/superman.mp3" id="introMusic">
+      <p>Your browser does not support the <code>audio</code> element.</p>
+    </audio>
+
+    <audio src="music/game-over.mp3" id="gameOverMusic">
+      <p>Your browser does not support the <code>audio</code> element.</p>
+    </audio>
+
+    <audio src="music/game-play.mp3" id="gamePlay">
+      <p>Your browser does not support the <code>audio</code> element.</p>
+    </audio>
+  </div>
+
+  <div id="intro" class="blackBackground">
+    <div class="logo">
+      <a href="#" data-play="true" class="play">Play!</a>
+    </div>
+  </div>
+
+  <div id="gameOver" class="blackBackground hidden">
+      <img src="img/game-over.png" alt="Game Over!!"><br>
+      <a href="#" data-play="true" class="play">Play Again</a>
+  </div>
+
+  <div id="stars"></div>
+  <div id="stars2"></div>
+  <div id="stars3"></div>
+
+  <div class="container scrolling-background">
+    <div id="loadingArea"></div>
+    <div id="score">
+      <span class="score">0</span>
+      <h3>Score</h3>
+    </div>
+  	<div id="jack">
+  		<span data-jack="true" data-position=""></span>
+  	</div>
+  </div>
+
+</div>
+
+<script src="js/plugins/jquery.animateNumber.min.js"></script>
+<script src="js/scripts.js"></script>
+>>>>>>> 15b2e04f9e8ca9413ffab3360bc0d99bafb85789
 </body>
 </html>
